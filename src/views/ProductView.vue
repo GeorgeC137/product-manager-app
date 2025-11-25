@@ -17,21 +17,21 @@
       <div v-else-if="product" class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
         <div class="md:flex">
           <div class="md:w-1/2 bg-gray-50 p-8 flex items-center justify-center">
-            <img :src="product.thumbnail" :alt="product.title" class="w-full max-w-md rounded-xl shadow-md" />
+            <img :src="product.thumbnail" :alt="product.title" class="w-64 h-64 object-cover rounded-xl shadow-md" />
           </div>
           
           <div class="md:w-1/2 p-8">
-            <div class="mb-4">
+            <div class="mb-6">
               <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-primary/10 text-primary">
                 {{ product.category }}
               </span>
             </div>
             
-            <h2 class="text-3xl font-bold text-gray-900 mb-4">{{ product.title }}</h2>
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">{{ product.title }}</h2>
             
-            <p class="text-gray-600 mb-6 leading-relaxed">{{ product.description }}</p>
+            <p class="text-gray-600 mb-8 leading-relaxed">{{ product.description }}</p>
             
-            <div class="bg-gray-50 rounded-xl p-6 space-y-4 mb-6">
+            <div class="bg-gray-50 rounded-xl p-6 space-y-4 mb-8">
               <div class="flex justify-between items-center pb-3 border-b border-gray-200">
                 <span class="text-gray-600 font-medium">Price</span>
                 <span class="text-3xl font-bold text-primary">${{ product.price }}</span>

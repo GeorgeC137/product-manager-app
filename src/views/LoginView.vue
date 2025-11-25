@@ -7,7 +7,7 @@
       </div>
       
       <div class="bg-white rounded-xl shadow-xl p-8">
-        <form @submit.prevent="handleLogin" class="space-y-5">
+        <form @submit.prevent="handleLogin" class="space-y-6">
           <div>
             <label class="block text-gray-700 text-sm font-semibold mb-2">Username</label>
             <input 

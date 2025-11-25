@@ -1,12 +1,5 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <div v-if="success" class="fixed top-4 right-4 bg-emerald-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 font-semibold animate-slide-in">
-      ✓ Product added successfully!
-    </div>
-    <div v-if="error" class="fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 font-semibold animate-slide-in">
-      {{ error }}
-    </div>
-    
     <nav class="bg-white shadow-sm border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <h1 class="text-2xl font-bold text-primary">Add New Product</h1>
@@ -16,7 +9,7 @@
     
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
-        <form @submit.prevent="handleSubmit" class="space-y-6">
+        <form @submit.prevent="handleSubmit" class="space-y-8">
           <div>
             <label class="block text-gray-700 text-sm font-semibold mb-2">
               Product Title <span class="text-red-500">*</span>
@@ -56,7 +49,7 @@
                 Price <span class="text-red-500">*</span>
               </label>
               <div class="relative">
-                <span class="absolute left-4 top-2.5 text-gray-500 font-semibold">$</span>
+                <span class="absolute left-4 top-2.5 text-gray-500 mr-4 font-semibold">$</span>
                 <input 
                   v-model.number="form.price" 
                   type="number" 
@@ -105,6 +98,13 @@
               {{ loading ? 'Creating...' : 'Create Product' }}
             </button>
           </div>
+          
+          <p v-if="success" class="text-sm font-semibold bg-green-50 py-3 px-4 rounded-lg border border-green-200" style="color: #059669;">
+            ✓ Product added successfully!
+          </p>
+          <p v-if="error" class="text-sm font-semibold bg-red-50 py-3 px-4 rounded-lg border border-red-200" style="color: #dc2626;">
+            {{ error }}
+          </p>
         </form>
       </div>
     </div>
