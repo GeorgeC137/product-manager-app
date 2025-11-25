@@ -33,7 +33,7 @@ A Vue 3 application for managing products with authentication, built with Vue Ro
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/GeorgeC137/product-manager-app
 cd product-management-app
 ```
 
