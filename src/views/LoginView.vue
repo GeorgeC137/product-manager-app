@@ -22,10 +22,10 @@
       
       <!-- Login Card -->
       <div class="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-gray-100 animate-slide-up">
-        <form @submit.prevent="handleLogin" class="space-y-5">
+        <form @submit.prevent="handleLogin" class="space-y-5" novalidate>
           <!-- Username Field -->
           <div class="group">
-            <label class="block text-gray-700 text-sm font-semibold mb-2 transition-colors group-focus-within:text-primary">
+            <label for="username" class="block text-gray-700 text-sm font-semibold mb-2 transition-colors group-focus-within:text-primary">
               Username
             </label>
             <div class="relative">
@@ -35,18 +35,23 @@
                 </svg>
               </div>
               <input 
+                id="username"
+                ref="usernameInput"
                 v-model="username" 
+                @input="clearError"
                 type="text" 
                 required
                 class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all bg-gray-50/50 focus:bg-white"
                 placeholder="Enter your username"
+                autocomplete="username"
+                aria-required="true"
               />
             </div>
           </div>
           
           <!-- Password Field -->
           <div class="group">
-            <label class="block text-gray-700 text-sm font-semibold mb-2 transition-colors group-focus-within:text-primary">
+            <label for="password" class="block text-gray-700 text-sm font-semibold mb-2 transition-colors group-focus-within:text-primary">
               Password
             </label>
             <div class="relative">
@@ -56,17 +61,39 @@
                 </svg>
               </div>
               <input 
+                id="password"
                 v-model="password" 
-                type="password" 
+                @input="clearError"
+                :type="showPassword ? 'text' : 'password'"
                 required
-                class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all bg-gray-50/50 focus:bg-white"
+                class="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all bg-gray-50/50 focus:bg-white"
                 placeholder="Enter your password"
+                autocomplete="current-password"
+                aria-required="true"
               />
+              <button
+                type="button"
+                @click="showPassword = !showPassword"
+                :aria-pressed="showPassword"
+                class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm text-gray-500 hover:text-gray-700"
+              >
+                <span v-if="showPassword">Hide</span>
+                <span v-else>Show</span>
+              </button>
             </div>
           </div>
+
+          <!-- Remember / Forgot -->
+          <!-- <div class="flex items-center justify-between">
+            <label class="inline-flex items-center text-sm text-gray-600">
+              <input type="checkbox" v-model="rememberMe" class="form-checkbox h-4 w-4 text-primary border-gray-300 rounded" />
+              <span class="ml-2">Remember me</span>
+            </label>
+            <router-link to="/forgot-password" class="text-sm text-primary hover:underline">Forgot?</router-link>
+          </div> -->
           
           <!-- Error Message -->
-          <div v-if="error" class="bg-red-50 border border-red-200 rounded-xl p-3 animate-shake">
+          <div v-if="error" class="bg-red-50 border border-red-200 rounded-xl p-3 animate-shake" role="alert" aria-live="assertive">
             <div class="flex items-center">
               <svg class="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -81,7 +108,7 @@
             :disabled="loading"
             class="w-full bg-gradient-to-r from-primary to-blue-600 text-white py-3 px-4 rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center space-x-2"
           >
-            <span v-if="loading" class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            <span v-if="loading" class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true"></span>
             <span>{{ loading ? 'Signing in...' : 'Sign In' }}</span>
           </button>
         </form>
@@ -95,6 +122,7 @@
               <span class="text-gray-400">/</span>
               <code class="px-3 py-1 bg-white rounded-lg text-sm font-mono text-primary border border-gray-200">emilyspass</code>
             </div>
+            <!-- <p class="mt-3 text-xs text-gray-500 text-center">Use demo creds for quick access. Toggle "Remember me" to persist session (if supported).</p> -->
           </div>
         </div>
       </div>
@@ -108,7 +136,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 
@@ -117,18 +145,32 @@ const authStore = useAuthStore()
 
 const username = ref('')
 const password = ref('')
+const showPassword = ref(false)
+const rememberMe = ref(false)
 const loading = ref(false)
 const error = ref('')
+
+const usernameInput = ref(null)
+
+onMounted(() => {
+  usernameInput.value?.focus()
+})
+
+const clearError = () => {
+  error.value = ''
+}
 
 const handleLogin = async () => {
   loading.value = true
   error.value = ''
   
   try {
-    await authStore.login({ username: username.value, password: password.value })
+    // pass remember flag to store if supported
+    await authStore.login({ username: username.value, password: password.value, remember: rememberMe.value })
     router.push('/products')
   } catch (err) {
-    error.value = 'Invalid username or password'
+    // prefer server-provided message when available
+    error.value = err?.message || 'Invalid username or password'
   } finally {
     loading.value = false
   }
